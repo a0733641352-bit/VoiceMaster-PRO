@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceMaster AI Studio ✨</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap');
+        :root {
+            --bg-1: #f6f3ff;
+            --bg-2: #eef4ff;
+            --bg-3: #fffaf0;
+            --panel: rgba(255,255,255,0.8);
+            --panel-strong: #ffffff;
+            --text: #1f2937;
+            --muted: #64748b;
+            --line: rgba(148, 163, 184, 0.26);
+            --brand: #4f46e5;
+            --brand-2: #8b5cf6;
+            --brand-3: #f59e0b;
+            --gold: #eab308;
+            --shadow: rgba(79, 70, 229, 0.14);
+        }
+ 
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Assistant', sans-serif;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            background:
+                radial-gradient(circle at top right, rgba(139, 92, 246, 0.18), transparent 18%),
+                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.14), transparent 20%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+            color: var(--text);
+            transition: background 0.35s ease, color 0.35s ease;
+        }
+        body.dark-mode {
+            --bg-1: #101426;
+            --bg-2: #172033;
+            --bg-3: #241e2d;
+            --text: #e5e7eb;
+            background:
+                radial-gradient(circle at top right, rgba(129, 140, 248, 0.18), transparent 20%),
+                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.10), transparent 22%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+        }
+        body.dark-mode .card,
+        body.dark-mode .floating-menu { background: rgba(23, 32, 51, 0.82); border-color: rgba(148, 163, 184, 0.22); }
+        body.dark-mode .text-slate-800,
+        body.dark-mode .text-slate-900,
+        body.dark-mode .text-indigo-900 { color: #f8fafc !important; }
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea,
+        body.dark-mode .bg-slate-50,
+        body.dark-mode .bg-slate-100 { background-color: #1e293b !important; color: #f8fafc !important; border-color: #334155; }
+        body.dark-mode .bg-white { background-color: #1e293b !important; }
+        body.dark-mode .border-slate-200,
+        body.dark-mode .border-slate-300 { border-color: #334155 !important; }
+ 
+        .page-shell {
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: clamp(14px, 3vw, 28px) clamp(12px, 3vw, 32px) 48px;
+        }
+        .page-shell::before,
+        .page-shell::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.42;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .page-shell::before { right: -30px; top: 10px; background: rgba(79, 70, 229, 0.18); }
+        .page-shell::after { left: -40px; bottom: 30px; background: rgba(245, 158, 11, 0.14); }
+ 
+        .card {
+            min-width: 0;
+            max-width: 100%;
+            background: rgba(255,255,255,0.74);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 18px 40px -22px rgba(31, 41, 55, 0.18);
+            transition: all 0.28s ease;
+        }
+        .card:hover { transform: translateY(-1px); box-shadow: 0 24px 46px -24px rgba(79, 70, 229, 0.28); }
+ 
+        .luxury-chip {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(245, 158, 11, 0.12));
+            border: 1px solid rgba(79, 70, 229, 0.14);
+            color: #4c1d95;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+ 
+        .floating-menu {
+            background: rgba(255,255,255,0.65);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 16px 34px -18px rgba(79,70,229,0.24);
+        }
+ 
+        .loading-spinner { border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid currentColor; border-radius: 50%; width: 16px; height: 16px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+ 
+        .pulse-soft {
+            animation: pulseSoft 2.8s ease-in-out infinite;
+        }
+        @keyframes pulseSoft {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(79,70,229,0.12); }
+            50% { transform: scale(1.02); box-shadow: 0 0 24px rgba(79,70,229,0.18); }
+        }
+ 
+        .feature-badge {
+            background: linear-gradient(90deg, #4f46e5, #8b5cf6, #f59e0b);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            box-shadow: 0 10px 20px -12px rgba(79, 70, 229, 0.7);
+        }
+ 
+        .premium-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 48%, #f59e0b 100%);
+            box-shadow: 0 18px 30px -18px rgba(79, 70, 229, 0.7);
+        }
+ 
+        .app-header {
+            min-height: 76px;
+            width: 100%;
+            min-width: 0;
+            position: relative;
+            z-index: 1000 !important;
+        }
+        .header-controls {
+            position: relative;
+            margin-inline-start: auto;
+        }
+        .api-key-popover {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0 !important;
+            left: auto !important;
+            width: min(360px, calc(100vw - 24px)) !important;
+            min-width: min(300px, calc(100vw - 24px));
+            overflow-x: hidden;
+            padding: 18px;
+            z-index: 1000;
+            pointer-events: auto;
+            isolation: isolate;
+        }
+        .api-key-backdrop,
+        .api-key-backdrop.hidden { display: none !important; }
+        .api-key-backdrop:not(.hidden) { pointer-events: auto; }
+        .api-key-popover h4 { display: flex; align-items: center; gap: 8px; }
+        .api-key-popover .key-manager-note { font-size: 10px; color: #64748b; line-height: 1.5; margin-bottom: 10px; }
+        .api-key-popover .key-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+        .api-key-popover .key-form button { white-space: nowrap; }
+        .saved-api-key-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        .saved-api-key-row button {
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+        .saved-api-key-row .saved-key {
+            min-width: 0;
+            flex: 1 1 auto;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .saved-api-key-row .copy-key,
+        .saved-api-key-row .remove-key {
+            min-width: 42px;
+            text-align: center;
+        }
+        .brand-lockup,
+        .header-controls,
+        .app-main-grid > div { min-width: 0; }
+        .app-main-grid {
+            align-items: start;
+            width: 100%;
+            min-width: 0;
+        }
+        .studio-card {
+            min-width: 0;
+        }
+        .floating-menu button {
+            min-height: 38px;
+            white-space: nowrap;
+        }
+        select, input, textarea {
+            min-width: 0;
+        }
+ 
+        @media (max-width: 640px) {
+            .page-shell { padding-bottom: 30px; }
+            .app-header { align-items: flex-start; }
+            .brand-lockup { max-width: calc(100vw - 92px); }
+            .brand-lockup h1 { font-size: 1.45rem; }
+            .header-controls { width: 100%; justify-content: flex-end; }
+            .api-key-popover {
+                position: fixed;
+                top: 12px;
+                right: 12px !important;
+                left: 12px !important;
+                width: auto !important;
+                min-width: 0;
+                max-width: none;
+                max-height: calc(100dvh - 24px);
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                border-radius: 24px;
+                pointer-events: auto;
+                touch-action: manipulation;
+            }
+            .api-key-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.42);
+                z-index: 900;
+            }
+            .api-key-backdrop:not(.hidden) { display: block !important; }
+            .floating-menu {
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+                margin-inline: -4px;
+                padding-inline: 4px;
+            }
+            .floating-menu::-webkit-scrollbar { display: none; }
+            .floating-menu button { flex: 0 0 auto; }
+            .studio-card { border-radius: 1.35rem; }
+            #textInput { min-height: 150px; }
+            #customStyleInput { min-width: 0; }
+            #generateBtn { min-height: 54px; }
+            audio { width: 100%; }
+        }
+ 
+        audio { max-width: 100%; height: 36px; }
+        input, select, textarea, button { font-family: 'Assistant', sans-serif; }
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.28); border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen" id="bodyTag">
+    <div class="page-shell">
+        <header class="app-header relative z-10 flex flex-wrap justify-between items-center gap-4 mb-6 sm:mb-8 pb-4 border-b border-slate-200/80">
+            <div class="brand-lockup flex items-center gap-3 sm:gap-4">
+                <div class="bg-gradient-to-br from-indigo-600 via-violet-500 to-amber-400 p-2.5 sm:p-3 rounded-2xl text-white shadow-xl flex-shrink-0 ring-8 ring-indigo-500/10 pulse-soft">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-none uppercase text-slate-800">Voice<span class="text-indigo-600">Master</span></h1>
+                    <div class="mt-1 flex flex-wrap items-center gap-2">
+                        <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">AI Smart Narration Hub</p>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="header-controls flex items-center gap-2 sm:gap-3">
+                <div class="relative">
+                    <button id="apiKeyBtn" class="p-2.5 sm:p-3 rounded-xl card shadow-sm hover:scale-105 transition-all flex items-center gap-2 text-xs font-bold text-slate-600">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        <span id="apiKeyStatus" class="hidden sm:inline">הגדר מפתח</span>
+                    </button>
+                    <div id="apiKeyPopover" class="api-key-popover hidden card rounded-2xl shadow-2xl">
+                        <h4 class="font-bold text-sm mb-1 text-slate-800"><span class="text-indigo-600">●</span> ניהול מפתחות API</h4>
+                        <p class="key-manager-note">הוסף כמה מפתחות, בחר מפתח פעיל, העתק או מחק. המפתחות נשמרים מקומית בדפדפן.</p>
+                        <div class="key-form">
+                            <input id="apiKeyInput" type="password" class="w-full p-2.5 text-xs bg-slate-50 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800" placeholder="הדבק כאן מפתח Gemini">
+                            <button id="saveApiKey" type="button" class="px-3 py-2 bg-indigo-600 text-white text-[11px] font-bold rounded-lg hover:bg-indigo-700 active:scale-95 transition-all">הוסף</button>
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button id="newApiKeyBtn" type="button" class="flex-1 py-2 bg-slate-100 text-slate-700 text-[11px] font-bold rounded-lg hover:bg-indigo-50 active:scale-95 transition-all">מפתח חדש</button>
+                            <button id="clearApiKey" class="flex-1 py-2 bg-red-50 text-red-600 text-[11px] font-bold rounded-lg hover:bg-red-100 active:scale-95 transition-all">מחק פעיל</button>
+                        </div>
+                        <div class="mt-3 border-t border-slate-200 pt-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-bold text-slate-500">מפתחות שמורים</span>
+                                <span id="apiKeyCount" class="text-[10px] text-slate-400">0</span>
+                            </div>
+                            <div id="savedApiKeysList" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <button id="toggleDark" class="p-2.5 sm:p-3 rounded-xl card shadow-sm hover:scale-105 active:scale-95 transition-all text-slate-600" aria-label="החלף מצב לילה" title="החלף מצב לילה">
+                    <svg id="darkModeIcon" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+ 
+        <div id="apiKeyBackdrop" class="api-key-backdrop" aria-hidden="true"></div>
+ 
+        <div class="app-main-grid grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+            <div class="lg:col-span-5 space-y-6">
+                <div class="studio-card card p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] shadow-lg border-indigo-100 pulse-soft">
+                    <div class="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 class="font-black text-sm sm:text-base text-indigo-900">יצירת תוכן חכמה</h3>
+                    </div>
+                    <div class="flex gap-2 mb-3 sm:mb-4">
+                        <input id="promptInput" type="text" class="flex-grow p-3 bg-slate-50/90 rounded-xl text-xs sm:text-sm border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800" placeholder="תאר מה לכתוב (למשל: פרסומת לשירות חדש)...">
+                        <button id="magicWriteBtn" class="p-3 premium-button text-white rounded-xl hover:brightness-110 active:scale-95 transition-all flex items-center justify-center min-w-[48px] sm:min-w-[50px] shadow-lg shadow-indigo-500/25">
+                            <span id="magicIcon">✨</span>
+                            <div id="magicLoader" class="loading-spinner hidden"></div>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <button onclick="smartEdit('הפוך את הטקסט ליותר רגוע ונעים')" class="text-[11px] font-bold py-2 px-1 bg-slate-100 rounded-lg hover:bg-indigo-50 text-slate-700 active:scale-95 transition-all truncate">✨ ריכוך</button>
+                        <button onclick="smartEdit('הפוך את הטקסט ליותר שיווקי ואנרגטי')" class="text-[11px] font-bold py-2 px-1 bg-slate-100 rounded-lg hover:bg-indigo-50 text-slate-700 active:scale-95 transition-all truncate">✨ שיווקי</button>
+                        <button onclick="smartEdit('קצר את הטקסט ב-30% מבלי לאבד משמעות')" class="text-[11px] font-bold py-2 px-1 bg-slate-100 rounded-lg hover:bg-indigo-50 text-slate-700 active:scale-95 transition-all truncate">✨ קיצור</button>
+                        <button onclick="translateText()" class="text-[11px] font-bold py-2 px-1 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all truncate">✨ תרגם</button>
+                        <button onclick="generatePodcastScript()" class="text-[11px] font-bold py-2 px-1 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all truncate">✨ פודקאסט</button>
+                        <button onclick="summarizeText()" class="text-[11px] font-bold py-2 px-1 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 active:scale-95 transition-all truncate">✨ סיכום</button>
+                    </div>
+                </div>
+ 
+                <div class="studio-card card p-4 sm:p-7 rounded-2xl sm:rounded-[2.5rem] shadow-xl border-none">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+                        <label class="text-xs sm:text-sm font-bold text-slate-500">טקסט לקריינות</label>
+                        <button id="analyzeToneBtn" class="text-[10px] sm:text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full hover:bg-indigo-100 active:scale-95 transition-all flex items-center gap-1">
+                            <span>✨ התאם סגנון אוטומטית</span>
+                            <div id="toneLoader" class="loading-spinner hidden !w-3 !h-3"></div>
+                        </button>
+                    </div>
+                    <textarea id="textInput" rows="5" class="w-full p-3 sm:p-4 bg-slate-50/90 rounded-xl sm:rounded-2xl outline-none border-2 border-transparent focus:border-indigo-500 transition-all text-base sm:text-lg text-slate-800 resize-y shadow-inner shadow-slate-200/50" placeholder="הטקסט יופיע כאן..."></textarea>
+ 
+                    <div class="flex gap-2 mt-3 mb-5">
+                        <button id="vocalizeBtn" class="flex-1 py-2.5 sm:py-3 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-indigo-50 active:scale-95 transition-all flex items-center justify-center gap-2 border border-slate-100">
+                            <span>✨ ניקוד אוטומטי</span>
+                            <div id="vocalizeLoader" class="loading-spinner hidden"></div>
+                        </button>
+                    </div>
+ 
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mr-1 block mb-1">קול</label>
+                            <select id="voiceSelect" class="w-full p-3 bg-slate-100 rounded-xl text-xs sm:text-sm font-bold border-none outline-none cursor-pointer text-slate-800"></select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mr-1 block mb-1">סגנון והגשה</label>
+                            <select id="styleSelect" class="w-full p-3 bg-slate-100 rounded-xl text-xs sm:text-sm font-bold border-none outline-none cursor-pointer text-slate-800"></select>
+                        </div>
+                    </div>
+ 
+                    <div class="mb-4">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase mr-1 block mb-1">סגנון מותאם אישית</label>
+                        <div class="flex gap-2">
+                            <input id="customStyleInput" type="text" class="flex-1 p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 text-xs text-slate-800" placeholder="לדוגמה: קריין יוקרתי, איטי, חם ומדויק">
+                            <button id="saveCustomStyleBtn" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-[11px] font-bold hover:bg-slate-700 active:scale-95 transition-all">שמור</button>
+                        </div>
+                    </div>
+ 
+                    <button id="generateBtn" class="w-full premium-button hover:brightness-110 active:scale-[0.98] text-white font-bold py-3.5 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg shadow-indigo-500/30 transition-all flex items-center justify-center gap-3">
+                        <span id="btnText" class="text-sm sm:text-base">הפק קריינות עכשיו</span>
+                        <div id="btnLoader" class="loading-spinner hidden !border-t-white"></div>
+                    </button>
+                </div>
+            </div>
+ 
+            <div class="lg:col-span-7">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-black text-slate-900">הקלטות אחרונות</h2>
+                        <p class="text-[11px] text-slate-400">היסטוריית שמירת הקול שלך</p>
+                    </div>
+                    <button id="clearTracks" class="text-xs text-slate-400 hover:text-red-500 font-bold transition-colors">נקה הכל</button>
+                </div>
+                <div id="tracksContainer" class="space-y-3 sm:space-y-4">
+                    <div id="noTracks" class="text-center py-16 sm:py-24 border-2 border-dashed border-slate-300 rounded-2xl sm:rounded-[2.5rem] text-slate-400 font-bold text-sm sm:text-base bg-white/25">
+                        היסטוריית הקריינות שלך תישמר כאן
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+        <footer class="relative z-10 mt-10 sm:mt-14 rounded-2xl sm:rounded-[2rem] border border-white/70 bg-white/55 p-5 sm:p-7 text-center shadow-lg backdrop-blur-md">
+            <div class="mx-auto max-w-2xl">
+                <div class="mb-2 flex items-center justify-center gap-2">
+                </div>
+                <p class="text-base sm:text-lg font-black text-slate-800">אתר זה פותח על ידי אריה AI</p>
+                <p class="mt-2 text-xs sm:text-sm text-slate-500">אפשר למצוא את אריה AI גם בפורומים:</p>
+                <div class="mt-4 flex flex-col sm:flex-row items-stretch justify-center gap-2 sm:gap-3">
+                    <a href="https://f2.freeivr.co.il/user/%D7%90%D7%A8%D7%99%D7%94-ai" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-xs sm:text-sm font-bold text-indigo-700 transition-all hover:-translate-y-0.5 hover:bg-indigo-100">אריה AI בפורום ימות המשיח</a>
+                    <a href="https://mitmachim.top/user/%D7%90%D7%A8%D7%99%D7%94-ai" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs sm:text-sm font-bold text-amber-700 transition-all hover:-translate-y-0.5 hover:bg-amber-100">אריה AI בפורום מתמחים טופ</a>
+                </div>
+                <div class="mt-5 border-t border-slate-200/80 pt-4">
+                    <p class="text-xs sm:text-sm font-bold text-slate-600">לפניות, הצעות ייעול  :</p>
+                    <a href="mailto:a0733641352@gmail.com" class="mt-1 inline-block text-sm sm:text-base font-black text-indigo-600 transition-colors hover:text-amber-600">a0733641352@gmail.com</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+ 
+    <div id="toast" class="fixed bottom-4 sm:bottom-8 left-4 sm:left-8 right-4 sm:right-auto px-4 sm:px-6 py-3 rounded-xl shadow-2xl opacity-0 transition-all pointer-events-none z-50 transform translate-y-4 flex items-center justify-center sm:justify-start gap-2 max-w-md">
+        <span id="toastIcon"></span>
+        <span id="toastMessage" class="text-xs sm:text-sm font-semibold"></span>
+    </div>
+ 
+    <script>
+        // Global State & Config
+        function readStoredArray(key) {
+            try {
+                const value = JSON.parse(localStorage.getItem(key) || '[]');
+                return Array.isArray(value) ? value : [];
+            } catch (error) {
+                return [];
+            }
+        }
+ 
+        let savedApiKeys = readStoredArray('gemini_api_keys').filter((key) => typeof key === 'string' && key.trim());
+        const legacyApiKey = localStorage.getItem('gemini_api_key') || '';
+        if (legacyApiKey && !savedApiKeys.includes(legacyApiKey)) savedApiKeys.push(legacyApiKey);
+        let currentApiKey = localStorage.getItem('gemini_active_api_key') || savedApiKeys[0] || '';
+        let customStyles = readStoredArray('custom_voice_styles');
+        const apiKeyCooldowns = new Map();
+        const modelText = "gemini-3.5-flash";
+        const modelAudio = "gemini-2.5-flash-preview-tts";
+ 
+        const voiceCatalog = {
+            male: [
+                ['Zephyr', 'קליל'], ['Fenrir', 'עמוק'], ['Puck', 'שובב'], ['Charon', 'סמכותי'], ['Orus', 'קלאסי'],
+                ['Enceladus', 'צעיר'], ['Iapetus', 'חם'], ['Algieba', 'נמרץ'], ['Rasalgethi', 'בוגר'], ['Achernar', 'יציב'],
+                ['Alnilam', 'בהיר'], ['Schedar', 'נעים'], ['Achird', 'שידורי'], ['Zubenelgenubi', 'עמוק מאוד'],
+                ['Sadachbia', 'רך'], ['Sadaltager', 'טבעי'], ['Sulafat', 'עוצמתי'],
+                ['Zephyr', 'פרסומי'], ['Zephyr', 'רגוע'], ['Zephyr', 'חברי'], ['Zephyr', 'דוקומנטרי'],
+                ['Fenrir', 'קולנועי'], ['Fenrir', 'דרמטי'], ['Fenrir', 'חדשותי'], ['Fenrir', 'מלכותי'],
+                ['Puck', 'צעיר ואנרגטי'], ['Puck', 'קומי'], ['Puck', 'פודקאסט'], ['Puck', 'שיווקי'],
+                ['Charon', 'קריין חד'], ['Charon', 'מנחה'], ['Charon', 'עסקי'], ['Charon', 'רשמי'],
+                ['Orus', 'חם ובוגר'], ['Orus', 'מספר סיפורים'], ['Orus', 'אלגנטי'], ['Orus', 'מוטיבציוני'],
+                ['Iapetus', 'פרימיום'], ['Iapetus', 'עמוק וחם'], ['Algieba', 'ספורטיבי'], ['Algieba', 'מהיר'],
+                ['Rasalgethi', 'בשל ורגוע'], ['Achernar', 'יציב וברור'], ['Alnilam', 'בהיר ודינמי']
+            ],
+            female: [
+                ['Kore', 'מקצועי'], ['Leda', 'עדין'], ['Aoede', 'רך'], ['Callirrhoe', 'רהוט'], ['Autonoe', 'אנרגטי'],
+                ['Umbriel', 'מסתורי'], ['Despina', 'מהיר'], ['Erinome', 'ידידותי'], ['Algenib', 'חדשותי'],
+                ['Laomedeia', 'מרגיע'], ['Gacrux', 'אלגנטי'], ['Pulcherrima', 'עשיר'], ['Vindemiatrix', 'סבלני']
+            ]
+        };
+ 
+        const styleCatalog = [
+            { value: 'natural', label: 'טבעי (Natural)' },
+            { value: 'broadcast', label: 'שידור (Broadcast)' },
+            { value: 'cheerful', label: 'שמח (Cheerful)' },
+            { value: 'serious', label: 'רציני (Serious)' },
+            { value: 'whisper', label: 'לחישה (Whisper)' },
+            { value: 'excited', label: 'נרגש (Excited)' },
+            { value: 'calm', label: 'רגוע (Calm)' },
+            { value: 'authoritative', label: 'סמכותי (Authoritative)' },
+            { value: 'friendly', label: 'ידידותי (Friendly)' },
+            { value: 'professional', label: 'מקצועי (Professional)' },
+            { value: 'storytelling', label: 'מספר סיפורים (Storytelling)' },
+            { value: 'documentary', label: 'דוקומנטרי (Documentary)' },
+            { value: 'podcast', label: 'פודקאסט (Podcast)' },
+            { value: 'commercial', label: 'פרסומת (Commercial)' },
+            { value: 'dramatic', label: 'דרמטי (Dramatic)' },
+            { value: 'warm', label: 'חם (Warm)' },
+            { value: 'confident', label: 'ביטחון (Confident)' },
+            { value: 'gentle', label: 'עדין (Gentle)' },
+            { value: 'energetic', label: 'אנרגטי (Energetic)' },
+            { value: 'luxury', label: 'יוקרתי (Luxury)' },
+            { value: 'inspiring', label: 'מעורר השראה (Inspiring)' },
+            { value: 'technical', label: 'טכני (Technical)' },
+            { value: 'shouting', label: 'צעקה (Shouting)' },
+            { value: 'terrified', label: 'מבועת (Terrified)' },
+            { value: 'sad', label: 'עצוב (Sad)' },
+            { value: 'angry', label: 'כועס (Angry)' },
+            { value: 'hopeful', label: 'מלא תקווה (Hopeful)' },
+            { value: 'cinematic', label: 'קולנועי (Cinematic)' },
+            { value: 'royal', label: 'מלכותי (Royal)' },
+            { value: 'motivational', label: 'מוטיבציוני (Motivational)' }
+        ];
+ 
+        function saveApiKeyState() {
+            savedApiKeys = [...new Set(savedApiKeys.filter((key) => typeof key === 'string' && key.trim()))];
+            try {
+                localStorage.setItem('gemini_api_keys', JSON.stringify(savedApiKeys));
+                if (currentApiKey) localStorage.setItem('gemini_active_api_key', currentApiKey);
+                else localStorage.removeItem('gemini_active_api_key');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+ 
+        function renderSavedApiKeys() {
+            const list = document.getElementById('savedApiKeysList');
+            const count = document.getElementById('apiKeyCount');
+            if (!list || !count) return;
+            count.textContent = String(savedApiKeys.length);
+            list.innerHTML = savedApiKeys.length ? '' : '<div class="text-[10px] text-slate-400">אין מפתחות שמורים</div>';
+            savedApiKeys.forEach((key) => {
+                const row = document.createElement('div');
+                const masked = `${key.slice(0, 6)}...${key.slice(-4)}`;
+                row.className = 'saved-api-key-row rounded-lg border border-slate-200 bg-white px-2 py-1.5';
+                row.innerHTML = `<button class="saved-key flex-1 text-right text-[10px] font-bold ${key === currentApiKey ? 'text-indigo-600' : 'text-slate-600'}" data-key="${key}">${key === currentApiKey ? '✓ ' : ''}${masked}</button><button class="copy-key text-[10px] font-bold text-indigo-600" data-key="${key}">העתק</button><button class="remove-key text-[10px] font-bold text-red-500" data-key="${key}">מחק</button>`;
+                list.appendChild(row);
+            });
+            list.querySelectorAll('.saved-key').forEach((button) => {
+                button.onclick = () => { currentApiKey = button.dataset.key; saveApiKeyState(); updateApiStatus(); renderSavedApiKeys(); };
+            });
+            list.querySelectorAll('.remove-key').forEach((button) => {
+                button.onclick = () => {
+                    savedApiKeys = savedApiKeys.filter((key) => key !== button.dataset.key);
+                    if (currentApiKey === button.dataset.key) currentApiKey = savedApiKeys[0] || '';
+                    saveApiKeyState(); updateApiStatus(); renderSavedApiKeys();
+                };
+            });
+            list.querySelectorAll('.copy-key').forEach((button) => {
+                button.onclick = async () => {
+                    await copyApiKey(button.dataset.key);
+                    showToast('מפתח ה-API הועתק', 'success');
+                };
+            });
+        }
+ 
+        const els = {
+            textInput: document.getElementById('textInput'),
+            promptInput: document.getElementById('promptInput'),
+            generateBtn: document.getElementById('generateBtn'),
+            magicWriteBtn: document.getElementById('magicWriteBtn'),
+            analyzeToneBtn: document.getElementById('analyzeToneBtn'),
+            voiceSelect: document.getElementById('voiceSelect'),
+            styleSelect: document.getElementById('styleSelect'),
+            customStyleInput: document.getElementById('customStyleInput'),
+            saveCustomStyleBtn: document.getElementById('saveCustomStyleBtn'),
+            tracksContainer: document.getElementById('tracksContainer'),
+            noTracks: document.getElementById('noTracks'),
+            body: document.getElementById('bodyTag'),
+            toast: document.getElementById('toast'),
+            toastMessage: document.getElementById('toastMessage'),
+            // API Key elements
+            apiKeyBtn: document.getElementById('apiKeyBtn'),
+            apiKeyPopover: document.getElementById('apiKeyPopover'),
+            apiKeyInput: document.getElementById('apiKeyInput'),
+            saveApiKey: document.getElementById('saveApiKey'),
+            clearApiKey: document.getElementById('clearApiKey'),
+            apiKeyStatus: document.getElementById('apiKeyStatus'),
+            newApiKeyBtn: document.getElementById('newApiKeyBtn'),
+            apiKeyBackdrop: document.getElementById('apiKeyBackdrop')
+        };
+ 
+        function setApiKeyPopover(open) {
+            els.apiKeyPopover.classList.toggle('hidden', !open);
+            els.apiKeyBackdrop.classList.toggle('hidden', !open);
+            if (open) {
+                requestAnimationFrame(() => els.apiKeyInput.focus());
+            }
+        }
+ 
+        async function copyApiKey(key) {
+            try {
+                await navigator.clipboard.writeText(key);
+            } catch (error) {
+                els.apiKeyInput.value = key;
+                els.apiKeyInput.select();
+                document.execCommand('copy');
+            }
+        }
+ 
+        function populateVoiceSelect() {
+            const group = (label, voices) => `<optgroup label="${label}">${voices.map(([id, description]) => `<option value="${id}">${id} (${description})</option>`).join('')}</optgroup>`;
+            els.voiceSelect.innerHTML = group('קולות גבריים', voiceCatalog.male) + group('קולות נשיים', voiceCatalog.female);
+            els.voiceSelect.value = 'Zephyr';
+        }
+ 
+        function populateStyleSelect() {
+            const options = [...styleCatalog, ...customStyles].map(item => `<option value="${item.value}">${item.label}</option>`).join('');
+            els.styleSelect.innerHTML = options;
+            els.styleSelect.value = 'professional';
+        }
+ 
+        // Initialize UI
+        populateVoiceSelect();
+        populateStyleSelect();
+        saveApiKeyState();
+        renderSavedApiKeys();
+ 
+        function updateApiStatus() {
+            if (currentApiKey) {
+                els.apiKeyStatus.innerText = "מפתח מוגדר ✅";
+                els.apiKeyStatus.classList.add('text-green-600');
+                els.apiKeyInput.value = currentApiKey;
+            } else {
+                els.apiKeyStatus.innerText = "הגדר מפתח ⚠️";
+                els.apiKeyStatus.classList.remove('text-green-600');
+                els.apiKeyInput.value = "";
+            }
+        }
+        updateApiStatus();
+ 
+        els.newApiKeyBtn.onclick = () => {
+            els.apiKeyInput.value = '';
+            els.apiKeyInput.type = 'password';
+            els.apiKeyInput.focus();
+            els.saveApiKey.innerText = 'הוסף מפתח';
+        };
+ 
+        const savedDarkMode = localStorage.getItem('voice_master_dark_mode') === 'true';
+        const toggleDark = document.getElementById('toggleDark');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        function updateDarkModeButton() {
+            const isDark = els.body.classList.contains('dark-mode');
+            toggleDark.setAttribute('aria-label', isDark ? 'עבור למצב יום' : 'עבור למצב לילה');
+            toggleDark.title = isDark ? 'עבור למצב יום' : 'עבור למצב לילה';
+            darkModeIcon.innerHTML = isDark
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
+        }
+        if (savedDarkMode) els.body.classList.add('dark-mode');
+        updateDarkModeButton();
+        toggleDark.onclick = () => {
+            els.body.classList.toggle('dark-mode');
+            localStorage.setItem('voice_master_dark_mode', String(els.body.classList.contains('dark-mode')));
+            updateDarkModeButton();
+        };
+ 
+        document.getElementById('apiKeyInput').insertAdjacentHTML('afterend', '<button id="copyApiKeyBtn" type="button" class="w-full mt-2 py-2 bg-slate-100 text-slate-700 text-[11px] font-bold rounded-lg hover:bg-indigo-50 active:scale-95 transition-all">העתק מפתח נוכחי</button>');
+        document.getElementById('copyApiKeyBtn').onclick = async () => {
+            const key = els.apiKeyInput.value.trim() || currentApiKey;
+            if (!key) return showToast('אין מפתח API להעתקה');
+            await copyApiKey(key);
+            showToast('מפתח ה-API הועתק', 'success');
+        };
+ 
+        // API Key Popover Toggle
+        els.apiKeyBtn.onclick = (e) => {
+            e.stopPropagation();
+            setApiKeyPopover(els.apiKeyPopover.classList.contains('hidden'));
+        };
+ 
+        function addApiKey() {
+            const key = els.apiKeyInput.value.trim();
+            if (!key) {
+                showToast('הדבק מפתח API לפני ההוספה');
+                els.apiKeyInput.focus();
+                return false;
+            }
+            if (key.length < 20) {
+                showToast('מפתח ה־API קצר מדי או לא הוזן במלואו');
+                els.apiKeyInput.focus();
+                return false;
+            }
+ 
+            const wasExisting = savedApiKeys.includes(key);
+            if (!wasExisting) savedApiKeys.push(key);
+            currentApiKey = key;
+            if (!saveApiKeyState()) {
+                if (!wasExisting) savedApiKeys = savedApiKeys.filter((item) => item !== key);
+                showToast('לא ניתן לשמור בדפדפן. אפשר הרשאת אחסון ונסה שוב');
+                return false;
+            }
+ 
+            renderSavedApiKeys();
+            updateApiStatus();
+            els.apiKeyInput.value = '';
+            els.saveApiKey.innerText = 'הוסף';
+            setApiKeyPopover(false);
+            showToast(wasExisting ? 'המפתח כבר היה שמור והוא נבחר כמפתח הפעיל' : 'מפתח ה־API נוסף בהצלחה', 'success');
+            return true;
+        }
+ 
+        els.saveApiKey.onclick = addApiKey;
+        els.apiKeyInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addApiKey();
+            }
+        });
+ 
+        els.clearApiKey.onclick = () => {
+            savedApiKeys = savedApiKeys.filter((key) => key !== currentApiKey);
+            currentApiKey = savedApiKeys[0] || "";
+            saveApiKeyState();
+            renderSavedApiKeys();
+            updateApiStatus();
+            showToast("מפתח ה-API נמחק");
+        };
+ 
+        els.saveCustomStyleBtn.onclick = () => {
+            const label = els.customStyleInput.value.trim();
+            if (!label) return showToast('כתוב תיאור לסגנון המותאם אישית');
+            const value = `custom_${Date.now()}`;
+            customStyles.push({ value, label: `מותאם אישית: ${label}`, instruction: label });
+            localStorage.setItem('custom_voice_styles', JSON.stringify(customStyles));
+            populateStyleSelect();
+            els.styleSelect.value = value;
+            els.customStyleInput.value = '';
+            showToast('הסגנון המותאם נשמר', 'success');
+        };
+ 
+        document.addEventListener('click', (event) => {
+            if (!els.apiKeyPopover.contains(event.target) && event.target !== els.apiKeyBtn) setApiKeyPopover(false);
+        });
+        els.apiKeyPopover.onclick = (e) => e.stopPropagation();
+        els.apiKeyPopover.addEventListener('pointerdown', (e) => e.stopPropagation());
+        els.apiKeyBackdrop.onclick = () => setApiKeyPopover(false);
+ 
+        // Utility: Try each available key once, then stop to avoid wasting quota.
+        async function apiCall(model, payload) {
+            if (!currentApiKey) {
+                showToast("אנא הוסף מפתח API בתפריט מפתחות ה־API");
+                setApiKeyPopover(true);
+                const error = new Error('Missing API Key');
+                error.userMessage = 'לא הוגדר מפתח API.';
+                throw error;
+            }
+ 
+            const availableKeys = savedApiKeys.length ? [...savedApiKeys] : [currentApiKey];
+            const orderedKeys = [currentApiKey, ...availableKeys.filter((key) => key !== currentApiKey)];
+            let lastError = null;
+ 
+            for (const key of orderedKeys) {
+                const cooldownUntil = apiKeyCooldowns.get(key) || 0;
+                if (cooldownUntil > Date.now()) continue;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    if (response.ok) return data;
+ 
+                    lastError = new Error(data.error?.message || 'API request failed');
+                    lastError.status = response.status;
+                    lastError.userMessage = getHebrewApiError(response.status, data.error?.message);
+                    if (response.status === 429) {
+                        apiKeyCooldowns.set(key, Date.now() + 30000);
+                    } else if (response.status === 401 || response.status === 403) {
+                        apiKeyCooldowns.set(key, Date.now() + 300000);
+                    } else {
+                        throw lastError;
+                    }
+                } catch (error) {
+                    lastError = error;
+                    if (error.name === 'TypeError') {
+                        lastError.userMessage = 'אין חיבור לאינטרנט או שהדפדפן חסם את הבקשה.';
+                    }
+                    if (error.status && ![401, 403, 429].includes(error.status)) throw error;
+                }
+            }
+ 
+            if (lastError) throw lastError;
+            const cooldownError = new Error('All API keys are cooling down');
+            cooldownError.userMessage = 'כל מפתחות ה־API בהמתנה זמנית. נסה שוב בעוד חצי דקה.';
+            throw cooldownError;
+        }
+ 
+        function rotateApiKey() {
+            const availableKey = savedApiKeys.find((key) => (apiKeyCooldowns.get(key) || 0) <= Date.now());
+            if (!availableKey || availableKey === currentApiKey) return false;
+            currentApiKey = availableKey;
+            saveApiKeyState();
+            updateApiStatus();
+            renderSavedApiKeys();
+            return true;
+        }
+ 
+        function cleanGeneratedText(text) {
+            return String(text || '')
+                .replace(/^[\s`*_#>-]+/gm, '')
+                .replace(/[\*#`]/g, '')
+                .replace(/^\s*\d+[.)]\s*/gm, '')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+ 
+        function getHebrewApiError(status, serverMessage = '') {
+            if (status === 400) return 'הבקשה אינה תקינה. בדוק את הטקסט או את הגדרות הקריינות.';
+            if (status === 401 || status === 403) return 'מפתח ה־API אינו תקין או שאין לו הרשאה.';
+            if (status === 404) return 'השירות או המודל המבוקש אינם זמינים כרגע.';
+            if (status === 429) return 'המפתח הגיע למגבלת השימוש. המערכת תנסה מפתח אחר אם קיים.';
+            if (status >= 500) return 'שירות Gemini אינו זמין כרגע. נסה שוב מאוחר יותר.';
+            if (!serverMessage) return 'אירעה שגיאה בתקשורת עם Gemini.';
+            return 'אירעה שגיאה בתקשורת עם Gemini. בדוק את המפתח ואת החיבור לאינטרנט.';
+        }
+ 
+        function showHebrewError(error) {
+            const message = error?.userMessage || getHebrewApiError(error?.status, error?.message);
+            if (message && message !== 'Missing API Key') showToast(message);
+        }
+ 
+        function showToast(msg, type = 'error') {
+            els.toastMessage.innerText = msg;
+            els.toast.className = `fixed bottom-4 sm:bottom-8 left-4 sm:left-8 right-4 sm:right-auto px-4 sm:px-6 py-3 rounded-xl shadow-2xl transition-all z-50 transform translate-y-0 opacity-100 ${type === 'error' ? 'bg-red-600' : 'bg-indigo-600'} text-white max-w-md flex items-center justify-center sm:justify-start gap-2`;
+            setTimeout(() => { els.toast.classList.add('opacity-0', 'translate-y-4'); }, 4000);
+        }
+ 
+        // --- LLM Features ---
+ 
+        // ✨ Magic Write
+        els.magicWriteBtn.onclick = async () => {
+            const prompt = els.promptInput.value.trim();
+            if (!prompt) return showToast("תאר מה לכתוב בתיבה");
+            
+            toggleLoader('magic', true);
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `כתוב טקסט קצר ומקצועי לקריינות בעברית בנושא הבא: "${prompt}". השתמש בעברית בלבד. אל תכתוב כותרות, רשימות, כוכביות, סולמיות, סימוני Markdown, מספרי סעיפים, קוד או תגיות. החזר רק את הטקסט הנקי.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+            toggleLoader('magic', false);
+        };
+ 
+        // ✨ Smart Edit
+        async function smartEdit(instruction) {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("הכנס קודם טקסט לתיבה");
+            
+            showToast("מעבד טקסט...", "success");
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `${instruction} על הטקסט הבא: "${text}". החזר בעברית בלבד טקסט נקי, בלי כותרות, רשימות, כוכביות, סולמיות, סימוני Markdown, מספרים, קוד או תגיות.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+        }
+ 
+        // ✨ Translate
+        async function translateText() {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("אין טקסט לתרגום");
+            showToast("משכתב לעברית...", "success");
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `שכתב את הטקסט הבא לעברית טבעית וברורה שמתאימה לקריינות: "${text}". החזר רק טקסט בעברית ללא כותרות, רשימות, כוכביות, סולמיות, Markdown, קוד או תגיות.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+        }
+ 
+        // ✨ Podcast Script
+        async function generatePodcastScript() {
+            const topic = els.promptInput.value.trim() || "Technology";
+            showToast("יוצר תסריט פודקאסט...", "success");
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `כתוב בעברית בלבד דו-שיח קצר וטבעי לפודקאסט בין שני דוברים בנושא "${topic}". אל תשתמש בכותרות, רשימות, כוכביות, סולמיות, Markdown, קוד או תגיות. החזר רק את הדו-שיח הנקי.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+        }
+ 
+        // ✨ Summarize
+        async function summarizeText() {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("אין טקסט לסיכום");
+            showToast("מסכם לנקודות...", "success");
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `סכם בעברית את הטקסט הבא לשלושה משפטים קצרים וברורים לקריינות: "${text}". אל תשתמש ברשימות, כוכביות, סולמיות, Markdown, קוד או תגיות.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+        }
+ 
+        // ✨ Tone Analysis
+        els.analyzeToneBtn.onclick = async () => {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("אין טקסט לניתוח");
+            
+            toggleLoader('tone', true);
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `נתח את הטקסט הבא ובחר סגנון הקראה אחד בלבד מהרשימה: natural, cheerful, serious, whisper, excited, calm, authoritative, friendly, professional, storytelling, shouting, terrified, sad, angry, hopeful. החזר רק את מילת הסגנון באנגלית ללא הסבר. הטקסט: "${text}"` }] }]
+                });
+                const choice = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase();
+                if (choice) {
+                    const cleanChoice = choice.replace(/[^a-z]/g, '');
+                    const option = Array.from(els.styleSelect.options).find(o => o.value === cleanChoice);
+                    if (option) {
+                        els.styleSelect.value = cleanChoice;
+                        showToast(`הסגנון הותאם ל: ${option.text}`, "success");
+                    }
+                }
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+            toggleLoader('tone', false);
+        };
+ 
+        // ✨ Vocalization (Nikud)
+        document.getElementById('vocalizeBtn').onclick = async () => {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("אין טקסט לניקוד");
+            toggleLoader('vocalize', true);
+            try {
+                const data = await apiCall(modelText, {
+                    contents: [{ parts: [{ text: `הוסף ניקוד דקדוקי מלא ומדויק לטקסט הבא בעברית: "${text}". החזר רק את הטקסט המנוקד, בלי כותרות, רשימות, כוכביות, סולמיות או הסברים.` }] }]
+                });
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (result) els.textInput.value = cleanGeneratedText(result);
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+            toggleLoader('vocalize', false);
+        };
+ 
+        // --- TTS Core ---
+        els.generateBtn.onclick = async () => {
+            const text = els.textInput.value.trim();
+            if (!text) return showToast("הכנס טקסט לקריינות");
+            
+            toggleLoader('btn', true);
+            try {
+                const selectedStyle = [...styleCatalog, ...customStyles].find((style) => style.value === els.styleSelect.value);
+                const styleInstruction = selectedStyle?.instruction || selectedStyle?.label || els.styleSelect.value;
+                const result = await apiCall(modelAudio, {
+                    contents: [{ parts: [{ text: `בצע קריינות בעברית. סגנון ההקראה: ${styleInstruction}. הקרא בדיוק את הטקסט הבא ללא הוספת מילים: ${text}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { 
+                            voiceConfig: { 
+                                prebuiltVoiceConfig: { 
+                                    voiceName: els.voiceSelect.value 
+                                } 
+                            } 
+                        }
+                    }
+                });
+ 
+                const pcmData = result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                const mimeType = result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType || "";
+                const sampleRate = parseInt(mimeType.split('rate=')[1]) || 24000;
+ 
+                if (pcmData) {
+                    const blob = pcmToWav(pcmData, sampleRate);
+                    addTrack(blob, text.substring(0, 30));
+                    showToast("קריינות הופקה בהצלחה!", "success");
+                }
+            } catch (e) { if(e.message !== "Missing API Key") showHebrewError(e); }
+            toggleLoader('btn', false);
+        };
+ 
+        // --- Helpers ---
+        function toggleLoader(key, show) {
+            const l = document.getElementById(key + 'Loader');
+            const i = document.getElementById(key + 'Icon');
+            const t = document.getElementById(key + 'Text');
+            if (l) l.classList.toggle('hidden', !show);
+            if (i) i.classList.toggle('hidden', show);
+            if (t) t.innerText = show ? "מעבד..." : "הפק קריינות עכשיו";
+            if (key === 'btn') els.generateBtn.disabled = show;
+        }
+ 
+        function pcmToWav(base64, rate) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            const header = new ArrayBuffer(44);
+            const v = new DataView(header);
+            const s = (off, str) => { for (let i = 0; i < str.length; i++) v.setUint8(off + i, str.charCodeAt(i)); };
+            s(0, 'RIFF'); v.setUint32(4, 36 + bytes.length, true); s(8, 'WAVE'); s(12, 'fmt '); v.setUint32(16, 16, true);
+            v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+            v.setUint16(32, 2, true); v.setUint16(34, 16, true); s(36, 'data'); v.setUint32(40, bytes.length, true);
+            return new Blob([header, bytes], { type: 'audio/wav' });
+        }
+ 
+        function addTrack(blob, title) {
+            els.noTracks.classList.add('hidden');
+            const url = URL.createObjectURL(blob);
+            const div = document.createElement('div');
+            div.className = "card p-3 sm:p-4 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm border-slate-100 dark:border-slate-800";
+            div.innerHTML = `
+                <div class="flex-grow w-full sm:w-auto">
+                    <div class="font-bold text-xs sm:text-sm truncate dark:text-white">${title}...</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">${els.voiceSelect.value} | ${els.styleSelect.value}</div>
+                </div>
+                <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 dark:border-slate-800">
+                    <audio src="${url}" controls class="w-full sm:w-48"></audio>
+                    <a href="${url}" download="voice_${Date.now()}.wav" class="p-2 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg text-indigo-600 flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </a>
+                </div>
+            `;
+            els.tracksContainer.prepend(div);
+        }
+ 
+        document.getElementById('clearTracks').onclick = () => {
+            els.tracksContainer.querySelectorAll('.card').forEach(c => c.remove());
+            els.noTracks.classList.remove('hidden');
+        };
+    </script>
+</body>
+</html>
